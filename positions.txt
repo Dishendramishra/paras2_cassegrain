@@ -1,0 +1,3 @@
+uar_lamp    home
+flat_lamp   19000
+fabry-perot 38000
