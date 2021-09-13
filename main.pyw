@@ -159,7 +159,9 @@ class Ui(QMainWindow):
     
     def read_output(self):
         # return "done"
-        return self.ser.readline().strip().decode()
+        output = self.ser.readline().strip().decode()
+        output = output.replace(" ","")
+        return output
 
     def all_led_off(self):
         self.lbl_uar.setPixmap(QPixmap("resources/icons/off.png").scaled(32,32))
@@ -186,17 +188,18 @@ class Ui(QMainWindow):
         self.lbl_fabry.setPixmap(QPixmap("resources/icons/on.png").scaled(32,32)) if lamp == "fabry"  else None
         
     def nd_on(self):
-        self.send_cmd(str(self.spnbx_nd_angle.value()))
+        self.send_cmd("nd"+str(self.spnbx_nd_angle.value()))
         output = self.read_output()
 
         if output == "done":
             self.lbl_nd_on.setPixmap(QPixmap("resources/icons/on.png").scaled(32,32))
             self.lbl_nd_off.setPixmap(QPixmap("resources/icons/off.png").scaled(32,32))
         else:
+            print(output)
             print("error")
 
     def nd_off(self):
-        self.send_cmd("0")
+        self.send_cmd("nd0")
         output = self.read_output()
 
         if output == "done":
@@ -208,6 +211,7 @@ class Ui(QMainWindow):
     def solenoid_1(self):
         self.send_cmd("sol1")
         output = self.read_output()
+        print(output)
 
         if output == "done":
             self.img_star_cvr = self.toggle_led(self.img_star_cvr, self.lbl_star_cvr)
@@ -217,6 +221,7 @@ class Ui(QMainWindow):
     def solenoid_2(self):
         self.send_cmd("sol2")
         output = self.read_output()
+        print(output)
 
         if output == "done":
             self.img_cal_cvr = self.toggle_led(self.img_cal_cvr, self.lbl_cal_cvr)
@@ -226,6 +231,7 @@ class Ui(QMainWindow):
     def lamp_tung(self):
         self.send_cmd("tung")
         output = self.read_output()
+        print(output)
 
         if output == "done":
             self.img_tung_lamp = self.toggle_led(self.img_tung_lamp, self.lbl_tung_lamp)
@@ -235,6 +241,7 @@ class Ui(QMainWindow):
     def lamp_uar(self):
         self.send_cmd("uar")
         output = self.read_output()
+        print(output)
 
         if output == "done":
             self.img_uar_lamp = self.toggle_led(self.img_uar_lamp, self.lbl_uar_lamp)

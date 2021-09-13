@@ -29,6 +29,7 @@ void go_to_home(){
     stepper.runSpeedToPosition();
   }
   stepper.setCurrentPosition(0);
+  Serial.println();
 }
 
 int sensor(){
@@ -40,6 +41,11 @@ void setup() {
   servo.write(0);
   Serial.begin(115200);
 
+  pinMode(sol1, OUTPUT);    
+  pinMode(sol2, OUTPUT);    
+  pinMode(tung, OUTPUT);    
+  pinMode(uar, OUTPUT);    
+  
   digitalWrite(sol1,HIGH);
   digitalWrite(sol2,HIGH);
   digitalWrite(tung,HIGH);
@@ -47,7 +53,7 @@ void setup() {
   
   stepper.setMaxSpeed(2000);
   stepper.setAcceleration(500);
-  go_to_home();
+//  go_to_home();
 }
 
 void loop() {
@@ -65,11 +71,11 @@ void loop() {
       Serial.println("done");
     }
     else if(str.startsWith("ma")){
-      if (sensor()> is_threshold){
+      long int pos = str.substring(2).toInt();
+      if ( pos<=0 && sensor()> is_threshold){
         Serial.print("Already at home/UAr (limit position)!");
       }
       else{
-        long int pos = str.substring(2).toInt();
         stepper.moveTo(pos);
         stepper.runToPosition();
         Serial.println("done");
@@ -89,9 +95,9 @@ void loop() {
 //    }
     else if(str.startsWith("nd")){
       int angle = str.substring(2).toInt();
-      Serial.print("Moving degrees: ");
-      Serial.print(angle);
-      Serial.print(" ... ");
+//      Serial.print("Moving degrees: ");
+//      Serial.print(angle);
+//      Serial.print(" ... ");
       servo.write(angle);
       Serial.println("done");
     }
@@ -105,6 +111,16 @@ void loop() {
     }
     else if(str.startsWith("tung")){
       digitalWrite(tung, !digitalRead(tung));
+      Serial.println("done");
+    }
+    else if(str.startsWith("allrelay")){
+      digitalWrite(uar, HIGH);
+      delay(100);
+      digitalWrite(tung, HIGH);
+      delay(100);
+      digitalWrite(sol1, HIGH);
+      delay(100);
+      digitalWrite(sol2, HIGH);
       Serial.println("done");
     }
     else if(str.startsWith("uar")){
