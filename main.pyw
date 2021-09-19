@@ -61,7 +61,7 @@ class Ui(QMainWindow):
     def __init__(self, *args, **kwargs):
         super(Ui, self).__init__(*args, **kwargs)
 
-        uic.loadUi('gui_new.ui', self)
+        uic.loadUi('gui.ui', self)
 
         # self.threadpool = QThreadPool()
         # print("Multithreading with maximum %d threads" % self.threadpool.maxThreadCount())
