@@ -61,7 +61,7 @@ class Ui(QMainWindow):
     def __init__(self, *args, **kwargs):
         super(Ui, self).__init__(*args, **kwargs)
 
-        uic.loadUi('gui.ui', self)
+        uic.loadUi('gui_new.ui', self)
 
         # self.threadpool = QThreadPool()
         # print("Multithreading with maximum %d threads" % self.threadpool.maxThreadCount())
@@ -80,11 +80,13 @@ class Ui(QMainWindow):
         self.img_nd_off   = "resources/icons/on.png"
         self.img_nd_on    = "resources/icons/off.png"
         
-        self.connect_ser()
         self.ui_settings()
+        self.connect_ser()
         self.show()
 
     def ui_settings(self):
+
+        self.grbbox_ser.setVisible(False)
 
         # =========================================================================
         #  Lamp On/Off
