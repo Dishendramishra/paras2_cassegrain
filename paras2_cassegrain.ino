@@ -72,14 +72,14 @@ void loop() {
     }
     else if(str.startsWith("ma")){
       long int pos = str.substring(2).toInt();
-      if ( pos<=0 && sensor()> is_threshold){
-        Serial.print("Already at home/UAr (limit position)!");
-      }
-      else{
+//      if ( pos<=0 && sensor()> is_threshold){
+//        Serial.print("Already at home/UAr (limit position)!");
+//      }
+//      else{
         stepper.moveTo(pos);
         stepper.runToPosition();
         Serial.println("done");
-      }
+//      }
     }
 //    else if (str.startsWith("mr")){
 //      stepper.setSpeed(2000);
