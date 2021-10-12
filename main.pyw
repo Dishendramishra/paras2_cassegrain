@@ -3,6 +3,9 @@ from PyQt5.QtGui import *
 from PyQt5.QtWidgets import *
 from PyQt5.QtCore import *
 
+from time import sleep
+import resources
+
 import sys
 from qt_material import apply_stylesheet
 import traceback, sys
@@ -14,7 +17,7 @@ if sys.platform == "linux" or sys.platform == "linux2":
 
 elif sys.platform == "win32":
     import ctypes
-    myappid = u'prl.microk'  # arbitrary string
+    myappid = u'prl.paras2'  # arbitrary string
     ctypes.windll.shell32.SetCurrentProcessExplicitAppUserModelID(myappid)
 
 elif sys.platform == "darwin":
@@ -63,61 +66,60 @@ class Ui(QMainWindow):
 
         uic.loadUi('gui.ui', self)
 
-        # self.threadpool = QThreadPool()
-        # print("Multithreading with maximum %d threads" % self.threadpool.maxThreadCount())
+        self.threadpool = QThreadPool()
+        print("Multithreading with maximum %d threads" % self.threadpool.maxThreadCount())
+
+        self.led_on  = QPixmap(":/leds/images/leds/green.png")
+        self.led_off = QPixmap(":/leds/images/leds/off.png")
+
+        self.relays = { 1 : self.lbl_uar_lamp,
+                        2 : self.lbl_tung_lamp,
+                        3 : self.lbl_star_cvr,
+                        4 : self.lbl_cal_cvr}
+
         self.ser = None
-
-        self.img_tung_lamp = "resources/icons/off.png"
-        self.img_uar_lamp  = "resources/icons/off.png"
-        
-        self.img_uar      = "resources/icons/off.png"
-        self.img_tung     = "resources/icons/off.png"
-        self.img_fabry    = "resources/icons/off.png"
-        
-        self.img_star_cvr = "resources/icons/off.png"
-        self.img_cal_cvr  = "resources/icons/off.png"
-
-        self.img_nd_off   = "resources/icons/on.png"
-        self.img_nd_on    = "resources/icons/off.png"
-        
-        self.ui_settings()
         self.connect_ser()
+        self.ui_settings()
         self.show()
+
+        self.load_settings()
+
+    def closeEvent(self, event):
+        # msg_box = QMessageBox.information(self, 'Message', 'Saving Settings!', QMessageBox.Ok)
+        
+        msg_box = QMessageBox(QMessageBox.Information, "PARAS-2", "Saving Settings!")
+        msg_box.show()
+        QCoreApplication.processEvents()
+        
+        self.send_cmd("save_relays")
+        self.read_output()
+        msg_box.close()
+        print("closing")
 
     def ui_settings(self):
 
         self.grbbox_ser.setVisible(False)
 
         # =========================================================================
-        #  Lamp On/Off
+        #                       Relays
         # =========================================================================
-        self.btn_tung_lamp.clicked.connect(self.lamp_tung)
-        self.btn_uar_lamp.clicked.connect(self.lamp_uar)
-        self.lbl_tung_lamp.setPixmap(QPixmap(self.img_tung_lamp).scaled(32,32))
-        self.lbl_uar_lamp.setPixmap(QPixmap(self.img_uar_lamp).scaled(32,32))
+        self.btngrp_relays = QButtonGroup()
+        self.btngrp_relays.addButton(self.btn_uar_lamp ,  1)
+        self.btngrp_relays.addButton(self.btn_tung_lamp , 2)
+        self.btngrp_relays.addButton(self.btn_star_cvr ,  3)
+        self.btngrp_relays.addButton(self.btn_cal_cvr ,   4)
+        self.btngrp_relays.buttonClicked.connect(self.toggle_relay)
         # =========================================================================
 
 
         # =========================================================================
         # Select Lamp for Calibration Fiber
         # =========================================================================
-        self.btn_uar.clicked.connect(lambda: self.select_lamp("uar"))
-        self.btn_tung.clicked.connect(lambda: self.select_lamp("tung"))
-        self.btn_fabry.clicked.connect(lambda: self.select_lamp("fabry"))
-        self.lbl_uar.setPixmap(QPixmap(self.img_uar).scaled(32,32))
-        self.lbl_tung.setPixmap(QPixmap(self.img_tung).scaled(32,32))
-        self.lbl_fabry.setPixmap(QPixmap(self.img_fabry).scaled(32,32))
-        # =========================================================================
-
-
-        # =========================================================================
-        #                                Fiber Covers
-        # =========================================================================
-        self.btn_star_cvr.clicked.connect(self.solenoid_1)
-        self.btn_cal_cvr.clicked.connect(self.solenoid_2)
-
-        self.lbl_star_cvr.setPixmap(QPixmap(self.img_star_cvr).scaled(32,32))
-        self.lbl_cal_cvr.setPixmap(QPixmap(self.img_cal_cvr).scaled(32,32))
+        self.btngrp_lamp = QButtonGroup()
+        self.btngrp_lamp.addButton(self.btn_uar ,   1)
+        self.btngrp_lamp.addButton(self.btn_tung ,  2)
+        self.btngrp_lamp.addButton(self.btn_fabry , 3)
+        self.btngrp_lamp.buttonClicked.connect(self.select_lamp)
         # =========================================================================
 
 
@@ -127,11 +129,10 @@ class Ui(QMainWindow):
         self.spnbx_nd_angle.setValue(46)
         self.spnbx_nd_angle.setHidden(True)
 
-        self.btn_nd_on.clicked.connect(self.nd_on)
-        self.btn_nd_off.clicked.connect(self.nd_off)
-        
-        self.lbl_nd_on.setPixmap(QPixmap(self.img_nd_on).scaled(32,32))
-        self.lbl_nd_off.setPixmap(QPixmap(self.img_nd_off).scaled(32,32))
+        self.btngrp_nd = QButtonGroup()
+        self.btngrp_nd.addButton(self.btn_nd_set ,   1)
+        self.btngrp_nd.addButton(self.btn_nd_unset , 2)
+        self.btngrp_nd.buttonClicked.connect(self.select_nd_filter)
         # =========================================================================
         
     def toggle_led(self, led, target):
@@ -141,114 +142,205 @@ class Ui(QMainWindow):
         else:
             target.setPixmap(QPixmap("resources/icons/off.png").scaled(32,32))
             return "resources/icons/off.png"
-        
+    
+    # +================================================================+
+    # |                     Thread  Functions                           |
+    # +================================================================+
+    def move_servo_thread(self, str_cmd):
+        self.send_cmd(str_cmd)
+        output = self.read_output()
 
+        if output == "uar":
+            self.lbl_uar.setPixmap(self.led_on)
+        if output == "tung":
+            self.lbl_tung.setPixmap(self.led_on)
+        if output == "fabry":
+            self.lbl_fabry.setPixmap(self.led_on)
+        
+        self.enable_buttons()
+
+    def select_nd_filter_thread(self, str_cmd, btn_id):
+        self.send_cmd(str_cmd)
+        output = self.read_output()
+
+        if btn_id == 1:
+            self.lbl_nd_set.setPixmap(self.led_on)
+        else:
+            self.lbl_nd_unset.setPixmap(self.led_on)
+
+        self.enable_buttons()
+
+    def toggle_relay_thread(self, str_cmd, btn_id):
+        self.send_cmd(str_cmd)
+        output = int(self.read_output())
+
+        if output == 0:
+            self.relays[btn_id].setPixmap(self.led_on)
+        else:
+            self.relays[btn_id].setPixmap(self.led_off)
+        
+        self.enable_buttons()
+
+    def load_settings_thread(self):
+        self.disable_buttons()
+        sleep(1)
+        self.send_cmd("status")
+        output = self.read_output()
+        print("output: ", output)
+
+        self.lbl_uar_lamp.setPixmap(self.led_on)  if output[0] == "0" else None
+        self.lbl_tung_lamp.setPixmap(self.led_on) if output[1] == "0" else None
+        self.lbl_star_cvr.setPixmap(self.led_on)  if output[2] == "0" else None
+        self.lbl_cal_cvr.setPixmap(self.led_on)   if output[3] == "0" else None
+
+        if output[4] == "1":
+            self.lbl_nd_set.setPixmap(self.led_on)    
+        else:
+             self.lbl_nd_unset.setPixmap(self.led_on)
+
+        if output[5] == "1":
+            self.lbl_uar.setPixmap(self.led_on)    
+        elif output[5] == "2":
+             self.lbl_tung.setPixmap(self.led_on)
+        else:
+             self.lbl_fabry.setPixmap(self.led_on)
+
+        self.enable_buttons()
+    # +================================================================+
+
+
+
+    # +================================================================+
+    # |                     Serial Functions                           |
+    # +================================================================+
     def connect_ser(self):
         ports = serial.tools.list_ports.comports()
-        target_port = None
         for port, desc, hwid in sorted(ports):
             print("{}: {} [{}]".format(port, desc, hwid))
-            if "PID=2341:0043" in hwid:
-                # print(port)
-                target_port = port
-
-        self.ser = serial.Serial(target_port, 115200)
-
+            if "SER=74133353437351C05290" in hwid:
+                self.ser = serial.Serial(port, 115200)
+                print("Serial connected on: {}".format(port))
     
+    def check_serial(self):
+        if not self.ser:
+            msg_box = QMessageBox()
+            msg_box.setIcon(QMessageBox.Critical)
+            msg_box.setText("Controller Not Connected!")
+            msg_box.setWindowTitle("About")
+            msg_box.setStandardButtons(QMessageBox.Ok)
+            msg_box.exec_()
+            return False
+        return True
+
     def send_cmd(self, str_cmd):
-        # print("cmd: ", str_cmd)
-        self.ser.write(str_cmd.encode())
+        try:
+            self.ser.write(str_cmd.encode())
+        except:
+            msg_box = QMessageBox()
+            msg_box.setIcon(QMessageBox.Critical)
+            msg_box.setText("Serial Error: Restart Software!")
+            msg_box.setWindowTitle("Error!")
+            msg_box.setStandardButtons(QMessageBox.Ok)
+            msg_box.exec_()
+            
+            self.closeEvent()
     
     def read_output(self):
         # return "done"
         output = self.ser.readline().strip().decode()
         output = output.replace(" ","")
         return output
+    # +================================================================+
+    
 
-    def all_led_off(self):
-        self.lbl_uar.setPixmap(QPixmap("resources/icons/off.png").scaled(32,32))
-        self.lbl_tung.setPixmap(QPixmap("resources/icons/off.png").scaled(32,32))
-        self.lbl_fabry.setPixmap(QPixmap("resources/icons/off.png").scaled(32,32))
-
+    # +================================================================+
+    # |                     Button Functions                           |
+    # +================================================================+
     def select_lamp(self, lamp):
-        self.all_led_off()
+        self.disable_buttons()
+        self.lbl_uar.setPixmap(self.led_off)
+        self.lbl_tung.setPixmap(self.led_off)
+        self.lbl_fabry.setPixmap(self.led_off)
 
-        if lamp == "uar":
-            self.send_cmd("home")
-        elif lamp == "tung":
-            self.send_cmd("ma19000")
-        elif lamp == "fabry":
-            self.send_cmd("ma38000")
-        else:
-            print("error")
-            return
+        btn_id = self.btngrp_lamp.checkedId()
+
+        if btn_id == 1:
+            str_cmd = "uar"
+        elif btn_id == 2:
+            str_cmd = "tung"
+        elif btn_id == 3:
+            str_cmd = "fabry"
+
+        worker = Worker(self.move_servo_thread, [False, False, False], str_cmd)
+        self.threadpool.start(worker)
+
+    def select_nd_filter(self):
+        self.disable_buttons()
+        self.lbl_nd_set.setPixmap(self.led_off)
+        self.lbl_nd_unset.setPixmap(self.led_off)
+
+        btn_id = self.btngrp_nd.checkedId()
+
+        if btn_id == 1:
+            str_cmd = "nd"+str(self.spnbx_nd_angle.value())
+        elif btn_id == 2:
+            str_cmd = "nd0"
+
+        worker = Worker(self.select_nd_filter_thread, [False, False, False], str_cmd, btn_id)
+        self.threadpool.start(worker)
+
+    def toggle_relay(self):
+        self.disable_buttons()
+        btn_id = self.btngrp_relays.checkedId()
+
+        if btn_id == 1:
+            str_cmd = "uar_relay"
+        elif btn_id == 2:
+            str_cmd = "tung_relay"
+        elif btn_id == 3:
+            str_cmd = "sol1"
+        elif btn_id == 4:
+            str_cmd = "sol2"
+
+        worker = Worker(self.toggle_relay_thread, [False, False, False], str_cmd, btn_id)
+        self.threadpool.start(worker)
+    # +================================================================+
+
+    def load_settings(self):
+        worker = Worker(self.load_settings_thread, [False, False, False])
+        self.threadpool.start(worker)
+    
+    def enable_buttons(self):
+        self.btn_connect.setDisabled(False)
+        self.btn_disconnect.setDisabled(False)
+
+        self.btn_tung_lamp.setDisabled(False)
+        self.btn_uar_lamp.setDisabled(False)
+        self.btn_cal_cvr.setDisabled(False)
+        self.btn_star_cvr.setDisabled(False)
         
-        output = self.read_output()
-
-        self.lbl_uar.setPixmap(QPixmap("resources/icons/on.png").scaled(32,32)) if lamp == "uar"  else None
-        self.lbl_tung.setPixmap(QPixmap("resources/icons/on.png").scaled(32,32)) if lamp == "tung"  else None
-        self.lbl_fabry.setPixmap(QPixmap("resources/icons/on.png").scaled(32,32)) if lamp == "fabry"  else None
+        self.btn_tung.setDisabled(False)
+        self.btn_fabry.setDisabled(False)
+        self.btn_uar.setDisabled(False)
         
-    def nd_on(self):
-        self.send_cmd("nd"+str(self.spnbx_nd_angle.value()))
-        output = self.read_output()
+        self.btn_nd_set.setDisabled(False)
+        self.btn_nd_unset.setDisabled(False)
 
-        if output == "done":
-            self.lbl_nd_on.setPixmap(QPixmap("resources/icons/on.png").scaled(32,32))
-            self.lbl_nd_off.setPixmap(QPixmap("resources/icons/off.png").scaled(32,32))
-        else:
-            print(output)
-            print("error")
-
-    def nd_off(self):
-        self.send_cmd("nd0")
-        output = self.read_output()
-
-        if output == "done":
-            self.lbl_nd_on.setPixmap(QPixmap("resources/icons/off.png").scaled(32,32))
-            self.lbl_nd_off.setPixmap(QPixmap("resources/icons/on.png").scaled(32,32))
-        else:
-            print("error")
-
-    def solenoid_1(self):
-        self.send_cmd("sol1")
-        output = self.read_output()
-        print(output)
-
-        if output == "done":
-            self.img_star_cvr = self.toggle_led(self.img_star_cvr, self.lbl_star_cvr)
-        else:
-            print("error")
-
-    def solenoid_2(self):
-        self.send_cmd("sol2")
-        output = self.read_output()
-        print(output)
-
-        if output == "done":
-            self.img_cal_cvr = self.toggle_led(self.img_cal_cvr, self.lbl_cal_cvr)
-        else:
-            print("error")
-
-    def lamp_tung(self):
-        self.send_cmd("tung")
-        output = self.read_output()
-        print(output)
-
-        if output == "done":
-            self.img_tung_lamp = self.toggle_led(self.img_tung_lamp, self.lbl_tung_lamp)
-        else:
-            print("error")
-
-    def lamp_uar(self):
-        self.send_cmd("uar")
-        output = self.read_output()
-        print(output)
-
-        if output == "done":
-            self.img_uar_lamp = self.toggle_led(self.img_uar_lamp, self.lbl_uar_lamp)
-        else:
-            print("error")
+    def disable_buttons(self):
+        self.btn_connect.setDisabled(True)
+        self.btn_disconnect.setDisabled(True)
+        
+        self.btn_tung_lamp.setDisabled(True)
+        self.btn_uar_lamp.setDisabled(True)
+        self.btn_cal_cvr.setDisabled(True)
+        self.btn_star_cvr.setDisabled(True)
+        
+        self.btn_tung.setDisabled(True)
+        self.btn_fabry.setDisabled(True)
+        self.btn_uar.setDisabled(True)
+        
+        self.btn_nd_set.setDisabled(True)
+        self.btn_nd_unset.setDisabled(True)
 
 app = QApplication(sys.argv)
 app.setWindowIcon(QIcon("resources/icons/prl2.png"))
