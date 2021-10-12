@@ -45,12 +45,18 @@
              <property name="text">
               <string>Tungsten</string>
              </property>
+             <property name="checkable">
+              <bool>true</bool>
+             </property>
             </widget>
            </item>
            <item row="1" column="1">
             <widget class="QLabel" name="lbl_uar_lamp">
              <property name="text">
-              <string>led</string>
+              <string/>
+             </property>
+             <property name="pixmap">
+              <pixmap resource="resources.qrc">:/leds/images/leds/off.png</pixmap>
              </property>
              <property name="alignment">
               <set>Qt::AlignCenter</set>
@@ -60,7 +66,10 @@
            <item row="0" column="1">
             <widget class="QLabel" name="lbl_tung_lamp">
              <property name="text">
-              <string>led</string>
+              <string/>
+             </property>
+             <property name="pixmap">
+              <pixmap resource="resources.qrc">:/leds/images/leds/off.png</pixmap>
              </property>
              <property name="alignment">
               <set>Qt::AlignCenter</set>
@@ -71,6 +80,9 @@
             <widget class="QPushButton" name="btn_uar_lamp">
              <property name="text">
               <string>UAr</string>
+             </property>
+             <property name="checkable">
+              <bool>true</bool>
              </property>
             </widget>
            </item>
@@ -90,7 +102,10 @@
            <item row="1" column="1">
             <widget class="QLabel" name="lbl_tung">
              <property name="text">
-              <string>led</string>
+              <string/>
+             </property>
+             <property name="pixmap">
+              <pixmap resource="resources.qrc">:/leds/images/leds/off.png</pixmap>
              </property>
              <property name="alignment">
               <set>Qt::AlignCenter</set>
@@ -102,12 +117,18 @@
              <property name="text">
               <string>Tung</string>
              </property>
+             <property name="checkable">
+              <bool>true</bool>
+             </property>
             </widget>
            </item>
            <item row="0" column="1">
             <widget class="QLabel" name="lbl_uar">
              <property name="text">
-              <string>led</string>
+              <string/>
+             </property>
+             <property name="pixmap">
+              <pixmap resource="resources.qrc">:/leds/images/leds/off.png</pixmap>
              </property>
              <property name="alignment">
               <set>Qt::AlignCenter</set>
@@ -119,6 +140,9 @@
              <property name="text">
               <string>Fabry-Perot</string>
              </property>
+             <property name="checkable">
+              <bool>true</bool>
+             </property>
             </widget>
            </item>
            <item row="0" column="0">
@@ -126,12 +150,18 @@
              <property name="text">
               <string>UAr (Home)</string>
              </property>
+             <property name="checkable">
+              <bool>true</bool>
+             </property>
             </widget>
            </item>
            <item row="2" column="1">
             <widget class="QLabel" name="lbl_fabry">
              <property name="text">
-              <string>led</string>
+              <string/>
+             </property>
+             <property name="pixmap">
+              <pixmap resource="resources.qrc">:/leds/images/leds/off.png</pixmap>
              </property>
              <property name="alignment">
               <set>Qt::AlignCenter</set>
@@ -160,12 +190,18 @@
              <property name="text">
               <string>Callibration Fiber</string>
              </property>
+             <property name="checkable">
+              <bool>true</bool>
+             </property>
             </widget>
            </item>
            <item row="0" column="1">
             <widget class="QLabel" name="lbl_star_cvr">
              <property name="text">
-              <string>led</string>
+              <string/>
+             </property>
+             <property name="pixmap">
+              <pixmap resource="resources.qrc">:/leds/images/leds/off.png</pixmap>
              </property>
              <property name="alignment">
               <set>Qt::AlignCenter</set>
@@ -175,7 +211,10 @@
            <item row="1" column="1">
             <widget class="QLabel" name="lbl_cal_cvr">
              <property name="text">
-              <string>led</string>
+              <string/>
+             </property>
+             <property name="pixmap">
+              <pixmap resource="resources.qrc">:/leds/images/leds/off.png</pixmap>
              </property>
              <property name="alignment">
               <set>Qt::AlignCenter</set>
@@ -186,6 +225,9 @@
             <widget class="QPushButton" name="btn_star_cvr">
              <property name="text">
               <string>Star Fiber</string>
+             </property>
+             <property name="checkable">
+              <bool>true</bool>
              </property>
             </widget>
            </item>
@@ -203,16 +245,22 @@
          <item>
           <layout class="QGridLayout" name="gridLayout">
            <item row="0" column="0">
-            <widget class="QPushButton" name="btn_nd_off">
+            <widget class="QPushButton" name="btn_nd_set">
              <property name="text">
-              <string>Remove</string>
+              <string>Set</string>
+             </property>
+             <property name="checkable">
+              <bool>true</bool>
              </property>
             </widget>
            </item>
            <item row="0" column="1">
-            <widget class="QLabel" name="lbl_nd_off">
+            <widget class="QLabel" name="lbl_nd_set">
              <property name="text">
-              <string>led</string>
+              <string/>
+             </property>
+             <property name="pixmap">
+              <pixmap resource="resources.qrc">:/leds/images/leds/off.png</pixmap>
              </property>
              <property name="alignment">
               <set>Qt::AlignCenter</set>
@@ -220,16 +268,22 @@
             </widget>
            </item>
            <item row="2" column="0">
-            <widget class="QPushButton" name="btn_nd_on">
+            <widget class="QPushButton" name="btn_nd_unset">
              <property name="text">
-              <string>Place</string>
+              <string>Unset</string>
+             </property>
+             <property name="checkable">
+              <bool>true</bool>
              </property>
             </widget>
            </item>
            <item row="2" column="1">
-            <widget class="QLabel" name="lbl_nd_on">
+            <widget class="QLabel" name="lbl_nd_unset">
              <property name="text">
-              <string>led</string>
+              <string/>
+             </property>
+             <property name="pixmap">
+              <pixmap resource="resources.qrc">:/leds/images/leds/off.png</pixmap>
              </property>
              <property name="alignment">
               <set>Qt::AlignCenter</set>
@@ -394,6 +448,8 @@
   </widget>
   <widget class="QStatusBar" name="statusbar"/>
  </widget>
- <resources/>
+ <resources>
+  <include location="resources.qrc"/>
+ </resources>
  <connections/>
 </ui>
