@@ -58,10 +58,12 @@ void setup() {
     stepper.setCurrentPosition(stepper_pos);
   }
 
-  servo.attach(servo_pin);
+
   Serial.begin(115200);
   while(!Serial);
 
+  servo.attach(servo_pin);
+  servo.write(0);
   pinMode(sol1, OUTPUT);    
   pinMode(sol2, OUTPUT);    
   pinMode(tung, OUTPUT);    
