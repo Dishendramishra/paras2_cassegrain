@@ -11,6 +11,8 @@ from qt_material import apply_stylesheet
 import traceback, sys
 import serial
 import serial.tools.list_ports
+import os
+
 
 if sys.platform == "linux" or sys.platform == "linux2":
     pass
@@ -150,6 +152,8 @@ class Ui(QMainWindow):
         self.send_cmd(str_cmd)
         output = self.read_output()
 
+        print("output: ", output)
+
         if output == "uar":
             self.lbl_uar.setPixmap(self.led_on)
         if output == "tung":
@@ -183,7 +187,7 @@ class Ui(QMainWindow):
 
     def load_settings_thread(self):
         self.disable_buttons()
-        sleep(1)
+        sleep(2)
         self.send_cmd("status")
         output = self.read_output()
         print("output: ", output)
@@ -217,7 +221,7 @@ class Ui(QMainWindow):
         ports = serial.tools.list_ports.comports()
         for port, desc, hwid in sorted(ports):
             print("{}: {} [{}]".format(port, desc, hwid))
-            if "SER=74133353437351C05290" in hwid:
+            if os.environ["CASSEGRAIN_PORT"] in hwid:
                 self.ser = serial.Serial(port, 115200)
                 print("Serial connected on: {}".format(port))
     

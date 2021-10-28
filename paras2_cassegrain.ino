@@ -25,15 +25,15 @@ int is_threshold = 600;
 AccelStepper stepper = AccelStepper(motorInterfaceType, stepPin, dirPin);
 
 void go_to_home(){
-  Serial.print("selecting lamp: UAr ");
+//  Serial.print("selecting lamp: UAr ");
   stepper.setSpeed(4000);
   while(sensor() < is_threshold){
-    Serial.print(".");
+//    Serial.print(".");
     stepper.move(-1000);
     stepper.runSpeedToPosition();
   }
   stepper.setCurrentPosition(0);
-  Serial.println();
+//  Serial.println();
 }
 
 int sensor(){
@@ -116,9 +116,10 @@ void loop() {
       Serial.println("done");
     }
     else if(str.equals("uar")){
-      stepper.moveTo(0);
-      stepper.runToPosition();
+//      stepper.moveTo(0);
+//      stepper.runToPosition();
       save_stepper_pos(0);
+      go_to_home();
       Serial.println("uar");  
     }
     else if(str.equals("tung")){
