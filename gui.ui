@@ -30,6 +30,123 @@
     <property name="rightMargin">
      <number>10</number>
     </property>
+    <item row="0" column="0" colspan="2">
+     <widget class="QGroupBox" name="grbbox_ser">
+      <property name="title">
+       <string>Serial Connection</string>
+      </property>
+      <layout class="QGridLayout" name="gridLayout_6">
+       <item row="0" column="0">
+        <widget class="QLabel" name="lbl_comport">
+         <property name="text">
+          <string>COM PORT</string>
+         </property>
+         <property name="alignment">
+          <set>Qt::AlignCenter</set>
+         </property>
+        </widget>
+       </item>
+       <item row="0" column="1">
+        <widget class="QComboBox" name="cmbbox_comport">
+         <item>
+          <property name="text">
+           <string>COM1</string>
+          </property>
+         </item>
+         <item>
+          <property name="text">
+           <string>COM2</string>
+          </property>
+         </item>
+         <item>
+          <property name="text">
+           <string>COM3</string>
+          </property>
+         </item>
+         <item>
+          <property name="text">
+           <string>COM4</string>
+          </property>
+         </item>
+         <item>
+          <property name="text">
+           <string>COM5</string>
+          </property>
+         </item>
+         <item>
+          <property name="text">
+           <string>COM6</string>
+          </property>
+         </item>
+         <item>
+          <property name="text">
+           <string>COM7</string>
+          </property>
+         </item>
+         <item>
+          <property name="text">
+           <string>COM8</string>
+          </property>
+         </item>
+         <item>
+          <property name="text">
+           <string>COM9</string>
+          </property>
+         </item>
+         <item>
+          <property name="text">
+           <string>COM10</string>
+          </property>
+         </item>
+         <item>
+          <property name="text">
+           <string>COM11</string>
+          </property>
+         </item>
+         <item>
+          <property name="text">
+           <string>COM12</string>
+          </property>
+         </item>
+         <item>
+          <property name="text">
+           <string>COM13</string>
+          </property>
+         </item>
+         <item>
+          <property name="text">
+           <string>COM14</string>
+          </property>
+         </item>
+         <item>
+          <property name="text">
+           <string>COM15</string>
+          </property>
+         </item>
+         <item>
+          <property name="text">
+           <string>COM16</string>
+          </property>
+         </item>
+        </widget>
+       </item>
+       <item row="1" column="0">
+        <widget class="QPushButton" name="btn_connect">
+         <property name="text">
+          <string>Connect</string>
+         </property>
+        </widget>
+       </item>
+       <item row="1" column="1">
+        <widget class="QPushButton" name="btn_disconnect">
+         <property name="text">
+          <string>Disconnect</string>
+         </property>
+        </widget>
+       </item>
+      </layout>
+     </widget>
+    </item>
     <item row="1" column="0">
      <layout class="QVBoxLayout" name="left_panel">
       <item>
@@ -173,6 +290,61 @@
         </layout>
        </widget>
       </item>
+      <item>
+       <widget class="QGroupBox" name="grpbox_speckle_imaging">
+        <property name="title">
+         <string>Speckle Imaging</string>
+        </property>
+        <layout class="QGridLayout" name="gridLayout_7">
+         <item row="0" column="0">
+          <widget class="QPushButton" name="btn_set_speckle">
+           <property name="text">
+            <string>Set</string>
+           </property>
+           <property name="checkable">
+            <bool>true</bool>
+           </property>
+          </widget>
+         </item>
+         <item row="1" column="0">
+          <widget class="QPushButton" name="btn_unset_speckle">
+           <property name="text">
+            <string>Unset (home)</string>
+           </property>
+           <property name="checkable">
+            <bool>true</bool>
+           </property>
+          </widget>
+         </item>
+         <item row="1" column="1">
+          <widget class="QLabel" name="lbl_unset_speckle">
+           <property name="text">
+            <string/>
+           </property>
+           <property name="pixmap">
+            <pixmap resource="resources.qrc">:/leds/images/leds/off.png</pixmap>
+           </property>
+           <property name="alignment">
+            <set>Qt::AlignCenter</set>
+           </property>
+          </widget>
+         </item>
+         <item row="0" column="1">
+          <widget class="QLabel" name="lbl_set_speckle">
+           <property name="text">
+            <string/>
+           </property>
+           <property name="pixmap">
+            <pixmap resource="resources.qrc">:/leds/images/leds/off.png</pixmap>
+           </property>
+           <property name="alignment">
+            <set>Qt::AlignCenter</set>
+           </property>
+          </widget>
+         </item>
+        </layout>
+       </widget>
+      </item>
      </layout>
     </item>
     <item row="1" column="1">
@@ -185,18 +357,8 @@
         <layout class="QVBoxLayout" name="verticalLayout_3">
          <item>
           <layout class="QGridLayout" name="gridLayout_2">
-           <item row="1" column="0">
-            <widget class="QPushButton" name="btn_cal_cvr">
-             <property name="text">
-              <string>Callibration Fiber</string>
-             </property>
-             <property name="checkable">
-              <bool>true</bool>
-             </property>
-            </widget>
-           </item>
-           <item row="0" column="1">
-            <widget class="QLabel" name="lbl_star_cvr">
+           <item row="2" column="1">
+            <widget class="QLabel" name="lbl_cal_cvr">
              <property name="text">
               <string/>
              </property>
@@ -208,8 +370,8 @@
              </property>
             </widget>
            </item>
-           <item row="1" column="1">
-            <widget class="QLabel" name="lbl_cal_cvr">
+           <item row="0" column="1">
+            <widget class="QLabel" name="lbl_star_cvr">
              <property name="text">
               <string/>
              </property>
@@ -228,6 +390,39 @@
              </property>
              <property name="checkable">
               <bool>true</bool>
+             </property>
+            </widget>
+           </item>
+           <item row="2" column="0">
+            <widget class="QPushButton" name="btn_cal_cvr">
+             <property name="text">
+              <string>Callibration Fiber</string>
+             </property>
+             <property name="checkable">
+              <bool>true</bool>
+             </property>
+            </widget>
+           </item>
+           <item row="1" column="0">
+            <widget class="QPushButton" name="btn_star2_cvr">
+             <property name="text">
+              <string>Star 2 Fiber</string>
+             </property>
+             <property name="checkable">
+              <bool>true</bool>
+             </property>
+            </widget>
+           </item>
+           <item row="1" column="1">
+            <widget class="QLabel" name="lbl_star2_cvr">
+             <property name="text">
+              <string/>
+             </property>
+             <property name="pixmap">
+              <pixmap resource="resources.qrc">:/leds/images/leds/off.png</pixmap>
+             </property>
+             <property name="alignment">
+              <set>Qt::AlignCenter</set>
              </property>
             </widget>
            </item>
@@ -302,124 +497,62 @@
         </layout>
        </widget>
       </item>
+      <item>
+       <widget class="QGroupBox" name="grpbox_speckle_cvr">
+        <property name="title">
+         <string>Speckle Cover</string>
+        </property>
+        <layout class="QGridLayout" name="gridLayout_8">
+         <item row="0" column="0">
+          <widget class="QPushButton" name="btn_speckle_on">
+           <property name="text">
+            <string>ON</string>
+           </property>
+           <property name="checkable">
+            <bool>true</bool>
+           </property>
+          </widget>
+         </item>
+         <item row="0" column="1">
+          <widget class="QLabel" name="lbl_speckle_on">
+           <property name="text">
+            <string/>
+           </property>
+           <property name="pixmap">
+            <pixmap resource="resources.qrc">:/leds/images/leds/off.png</pixmap>
+           </property>
+           <property name="alignment">
+            <set>Qt::AlignCenter</set>
+           </property>
+          </widget>
+         </item>
+         <item row="1" column="0">
+          <widget class="QPushButton" name="btn_speckle_off">
+           <property name="text">
+            <string>OFF</string>
+           </property>
+           <property name="checkable">
+            <bool>true</bool>
+           </property>
+          </widget>
+         </item>
+         <item row="1" column="1">
+          <widget class="QLabel" name="lbl_speckle_off">
+           <property name="text">
+            <string/>
+           </property>
+           <property name="pixmap">
+            <pixmap resource="resources.qrc">:/leds/images/leds/off.png</pixmap>
+           </property>
+           <property name="alignment">
+            <set>Qt::AlignCenter</set>
+           </property>
+          </widget>
+         </item>
+        </layout>
+       </widget>
+      </item>
      </layout>
-    </item>
-    <item row="0" column="0" colspan="2">
-     <widget class="QGroupBox" name="grbbox_ser">
-      <property name="title">
-       <string>Serial Connection</string>
-      </property>
-      <layout class="QGridLayout" name="gridLayout_6">
-       <item row="0" column="0">
-        <widget class="QLabel" name="lbl_comport">
-         <property name="text">
-          <string>COM PORT</string>
-         </property>
-         <property name="alignment">
-          <set>Qt::AlignCenter</set>
-         </property>
-        </widget>
-       </item>
-       <item row="0" column="1">
-        <widget class="QComboBox" name="cmbbox_comport">
-         <item>
-          <property name="text">
-           <string>COM1</string>
-          </property>
-         </item>
-         <item>
-          <property name="text">
-           <string>COM2</string>
-          </property>
-         </item>
-         <item>
-          <property name="text">
-           <string>COM3</string>
-          </property>
-         </item>
-         <item>
-          <property name="text">
-           <string>COM4</string>
-          </property>
-         </item>
-         <item>
-          <property name="text">
-           <string>COM5</string>
-          </property>
-         </item>
-         <item>
-          <property name="text">
-           <string>COM6</string>
-          </property>
-         </item>
-         <item>
-          <property name="text">
-           <string>COM7</string>
-          </property>
-         </item>
-         <item>
-          <property name="text">
-           <string>COM8</string>
-          </property>
-         </item>
-         <item>
-          <property name="text">
-           <string>COM9</string>
-          </property>
-         </item>
-         <item>
-          <property name="text">
-           <string>COM10</string>
-          </property>
-         </item>
-         <item>
-          <property name="text">
-           <string>COM11</string>
-          </property>
-         </item>
-         <item>
-          <property name="text">
-           <string>COM12</string>
-          </property>
-         </item>
-         <item>
-          <property name="text">
-           <string>COM13</string>
-          </property>
-         </item>
-         <item>
-          <property name="text">
-           <string>COM14</string>
-          </property>
-         </item>
-         <item>
-          <property name="text">
-           <string>COM15</string>
-          </property>
-         </item>
-         <item>
-          <property name="text">
-           <string>COM16</string>
-          </property>
-         </item>
-        </widget>
-       </item>
-       <item row="1" column="0">
-        <widget class="QPushButton" name="btn_connect">
-         <property name="text">
-          <string>Connect</string>
-         </property>
-        </widget>
-       </item>
-       <item row="1" column="1">
-        <widget class="QPushButton" name="btn_disconnect">
-         <property name="text">
-          <string>Disconnect</string>
-         </property>
-        </widget>
-       </item>
-      </layout>
-     </widget>
     </item>
     <item row="2" column="0" colspan="2">
      <spacer name="verticalSpacer">

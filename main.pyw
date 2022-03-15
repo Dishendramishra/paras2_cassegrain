@@ -130,10 +130,10 @@ class Ui(QMainWindow):
         # =========================================================================
         # Select Speckle Imaging Unit
         # =========================================================================
-        self.btngrp_lamp = QButtonGroup()
-        self.btngrp_lamp.addButton(self.btn_nonspec ,   1)
-        self.btngrp_lamp.addButton(self.btn_spec , 2)
-        self.btngrp_lamp.buttonClicked.connect(self.select_speckle)
+        self.btngrp_speckle = QButtonGroup()
+        self.btngrp_speckle.addButton(self.btn_set_speckle ,  1)
+        self.btngrp_speckle.addButton(self.btn_unset_speckle, 2)
+        self.btngrp_speckle.buttonClicked.connect(self.select_speckle)
         # =========================================================================
 
         # =========================================================================
@@ -177,16 +177,16 @@ class Ui(QMainWindow):
         self.enable_buttons()
 
 
-    def move_speckle_servo_thread(self, str_cmd):
+    def move_speckle_stepper_thread(self, str_cmd):
         self.send_cmd(str_cmd)
         output = self.read_output()
 
         print("output: ", output)
 
         if output == "nonspec":
-            self.lbl_nonspec.setPixmap(self.led_on)
+            self.lbl_unset_speckle.setPixmap(self.led_on)
         if output == "spec":
-            self.lbl_spec.setPixmap(self.led_on)
+            self.lbl_set_speckle.setPixmap(self.led_on)
         
         self.enable_buttons()
 
@@ -240,9 +240,9 @@ class Ui(QMainWindow):
              self.lbl_fabry.setPixmap(self.led_on)
 
         if output[7] == "1":
-            self.lbl_nonspec.setPixmap(self.led_on)    
+            self.lbl_unset_speckle.setPixmap(self.led_on)    
         else:
-             self.lbl_spec.setPixmap(self.led_on)
+             self.lbl_set_speckle.setPixmap(self.led_on)
 
         self.enable_buttons()
     # +================================================================+
@@ -315,17 +315,17 @@ class Ui(QMainWindow):
 
     def select_speckle(self, speckle):
         self.disable_buttons()
-        self.lbl_nonspec.setPixmap(self.led_off)
-        self.lbl_spec.setPixmap(self.led_off)
+        self.lbl_unset_speckle.setPixmap(self.led_off)
+        self.lbl_set_speckle.setPixmap(self.led_off)
 
         btn_id = self.btngrp_speckle.checkedId()
 
         if btn_id == 1:
-            str_cmd = "nonspec"
-        elif btn_id == 2:
             str_cmd = "spec"
+        elif btn_id == 2:
+            str_cmd = "nonspec"
 
-        worker = Worker(self.move_servo_thread, [False, False, False], str_cmd)
+        worker = Worker(self.move_speckle_stepper_thread, [False, False, False], str_cmd)
         self.threadpool.start(worker)
 
     def select_nd_filter(self):
@@ -394,14 +394,18 @@ class Ui(QMainWindow):
         self.btn_uar_lamp.setDisabled(True)
         self.btn_cal_cvr.setDisabled(True)
         self.btn_star_cvr.setDisabled(True)
+        self.btn_star2_cvr.setDisabled(True)
         
         self.btn_tung.setDisabled(True)
         self.btn_fabry.setDisabled(True)
         self.btn_uar.setDisabled(True)
 
-        self.btn_nonspec.setDisabled(True)
-        self.btn_spec.setDisabled(True)
+        self.btn_set_speckle.setDisabled(True)
+        self.btn_unset_speckle.setDisabled(True)
         
+        self.btn_speckle_on.setDisabled(True)
+        self.btn_speckle_off.setDisabled(True)
+
         self.btn_nd_set.setDisabled(True)
         self.btn_nd_unset.setDisabled(True)
 
