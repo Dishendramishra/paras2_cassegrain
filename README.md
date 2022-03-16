@@ -3,7 +3,7 @@
 
 ### **Design Paradigms**
 
-- **Qthread Tutorial**: https://www.youtube.com/watch?v=k5tIk7w50L4
+- **Qthread Tutorial using Qt Desinger**: https://www.youtube.com/watch?v=k5tIk7w50L4
 
 
 
