@@ -78,14 +78,15 @@ class Ui(QMainWindow):
                         2 : self.lbl_tung_lamp,
                         3 : self.lbl_star_cvr,
                         4 : self.lbl_cal_cvr,
-                        5 : self.lbl_star2_cvr}
+                        5 : self.lbl_star2_cvr,
+                        6 : self.lbl_speckle_cvr}
 
         self.ser = None
         self.connect_ser()
         self.ui_settings()
+        self.load_settings()
         self.show()
 
-        self.load_settings()
 
     def closeEvent(self, event):
         # msg_box = QMessageBox.information(self, 'Message', 'Saving Settings!', QMessageBox.Ok)
@@ -107,11 +108,12 @@ class Ui(QMainWindow):
         #                       Relays
         # =========================================================================
         self.btngrp_relays = QButtonGroup()
-        self.btngrp_relays.addButton(self.btn_uar_lamp ,  1)
-        self.btngrp_relays.addButton(self.btn_tung_lamp , 2)
-        self.btngrp_relays.addButton(self.btn_star_cvr ,  3)
-        self.btngrp_relays.addButton(self.btn_cal_cvr ,   4)
+        self.btngrp_relays.addButton(self.btn_uar_lamp ,   1)
+        self.btngrp_relays.addButton(self.btn_tung_lamp ,  2)
+        self.btngrp_relays.addButton(self.btn_star_cvr ,   3)
+        self.btngrp_relays.addButton(self.btn_cal_cvr ,    4)
         self.btngrp_relays.addButton(self.btn_star2_cvr ,  5)
+        self.btngrp_relays.addButton(self.btn_speckle_cvr,  6)
         self.btngrp_relays.buttonClicked.connect(self.toggle_relay)
         # =========================================================================
 
@@ -226,24 +228,25 @@ class Ui(QMainWindow):
         self.lbl_star_cvr.setPixmap(self.led_on)  if output[2] == "0" else None
         self.lbl_cal_cvr.setPixmap(self.led_on)   if output[3] == "0" else None
         self.lbl_star2_cvr.setPixmap(self.led_on)  if output[4] == "0" else None
+        self.lbl_speckle_cvr.setPixmap(self.led_on)  if output[5] == "0" else None
 
         if output[5] == "1":
             self.lbl_nd_set.setPixmap(self.led_on)    
         else:
              self.lbl_nd_unset.setPixmap(self.led_on)
 
-        if output[6] == "1":
-            self.lbl_uar.setPixmap(self.led_on)    
-        elif output[6] == "2":
-             self.lbl_tung.setPixmap(self.led_on)
-        else:
-             self.lbl_fabry.setPixmap(self.led_on)
-
-        if output[7] == "1":
-            self.lbl_unset_speckle.setPixmap(self.led_on)    
-        else:
-             self.lbl_set_speckle.setPixmap(self.led_on)
-
+        # not implemented in sketch
+        
+        # if output[6] == "1":
+        #     self.lbl_uar.setPixmap(self.led_on)    
+        # elif output[6] == "2":
+        #      self.lbl_tung.setPixmap(self.led_on)
+        # else:
+        #      self.lbl_fabry.setPixmap(self.led_on)
+        # if output[7] == "1":
+        #     self.lbl_unset_speckle.setPixmap(self.led_on)    
+        # else:
+        #      self.lbl_set_speckle.setPixmap(self.led_on)
         self.enable_buttons()
     # +================================================================+
 
@@ -346,6 +349,7 @@ class Ui(QMainWindow):
     def toggle_relay(self):
         self.disable_buttons()
         btn_id = self.btngrp_relays.checkedId()
+        print("toggle_relay() btn_id : ",btn_id)
 
         if btn_id == 1:
             str_cmd = "uar_relay"
@@ -357,6 +361,8 @@ class Ui(QMainWindow):
             str_cmd = "sol2"
         elif btn_id == 5:
             str_cmd = "sol3"
+        elif btn_id == 6:
+            str_cmd = "speckle_relay"
 
         worker = Worker(self.toggle_relay_thread, [False, False, False], str_cmd, btn_id)
         self.threadpool.start(worker)
@@ -380,9 +386,10 @@ class Ui(QMainWindow):
         self.btn_fabry.setDisabled(False)
         self.btn_uar.setDisabled(False)
 
-        self.btn_nonspec.setDisabled(False)
-        self.btn_spec.setDisabled(False)
-        
+        self.btn_set_speckle.setDisabled(False)
+        self.btn_unset_speckle.setDisabled(False)
+
+        self.btn_speckle_cvr.setDisabled(False)        
         self.btn_nd_set.setDisabled(False)
         self.btn_nd_unset.setDisabled(False)
 
@@ -403,9 +410,7 @@ class Ui(QMainWindow):
         self.btn_set_speckle.setDisabled(True)
         self.btn_unset_speckle.setDisabled(True)
         
-        self.btn_speckle_on.setDisabled(True)
-        self.btn_speckle_off.setDisabled(True)
-
+        self.btn_speckle_cvr.setDisabled(True)
         self.btn_nd_set.setDisabled(True)
         self.btn_nd_unset.setDisabled(True)
 

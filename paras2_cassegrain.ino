@@ -22,18 +22,24 @@ int stepper1_pos_loc = 0;
 long stepper2_pos;
 int stepper2_pos_loc = 0;
 
-int tung = 6; byte tung_status;
-int uar  = 7; byte uar_status;
-int sol1 = 8; byte sol1_status; //Star-1
-int sol2 = 9; byte sol2_status; //Calib
-int sol3 = 10; byte sol3_status; //Star-2
+//====================================
+// Relay controll pin for relay modules
+//====================================
+int tung = 6; byte tung_status; //Green
+int uar  = 10 ; byte uar_status; //Blue
+int sol1 = 7; byte sol1_status; //Star-1 //Voilet
+int sol2 = 8; byte sol2_status; //Calib //Yellow
+int sol3 = 9; byte sol3_status; //Star-2 // Whitish Grey
+int speckle_cvr = 10;           //speckle-cvr
+//====================================
 
-int servo_pin = 11;
+int servo_pin = 11;   //Orange
+
+int interrupt_sens1 = A0; //U-Tung Homing sensor   //Blue
+
+int interrupt_sens2 = A1; //Speckle Imaging Homing sensor //Green
 
 
-int interrupt_sens1 = A0; //U-Tung Homing sensor
-
-int interrupt_sens2 = A1; //Speckle Imaging Homing sensor
 
 
 // is_threshold = interrupt sensor threshold
@@ -70,9 +76,9 @@ void save_stepper1_pos(long pos){
 void go_to_home2(){
 //  Serial.print("selecting Non Speckle position");
   stepper2.setSpeed(4000);
-  while(sensor2() < is_threshold2){
+  while(sensor2() > is_threshold2){
 //    Serial.print(".");
-    stepper2.move(-1000);
+    stepper2.move(500);
     stepper2.runSpeedToPosition();
   }
   stepper2.setCurrentPosition(0);
@@ -123,7 +129,10 @@ void setup() {
   pinMode(sol2, OUTPUT);  
   pinMode(sol3, OUTPUT);  
   pinMode(tung, OUTPUT);    
-  pinMode(uar,  OUTPUT);    
+  pinMode(uar,  OUTPUT);
+  pinMode(uar,  OUTPUT);
+  pinMode(speckle_cvr,  OUTPUT);
+
   
   // digitalWrite(sol1, HIGH);
   // digitalWrite(sol2, HIGH);
@@ -141,14 +150,14 @@ void setup() {
   if (sol1_status == 0) digitalWrite(sol1, LOW); else digitalWrite(sol1, HIGH);
   if (sol2_status == 0) digitalWrite(sol2, LOW); else digitalWrite(sol2, HIGH);
   if (sol3_status == 0) digitalWrite(sol3, LOW); else digitalWrite(sol3, HIGH);
-
-
+  
+  digitalWrite(speckle_cvr,  LOW);
 
   stepper1.setMaxSpeed(2000);
   stepper1.setAcceleration(500);
 
-   stepper2.setMaxSpeed(2000);
-  stepper2.setAcceleration(500);
+   stepper2.setMaxSpeed(4000);
+  stepper2.setAcceleration(2500);
 }
 
 
@@ -182,25 +191,38 @@ void loop() {
       }
       Serial.println("done");
     }
-    else if(str.equals("uar")){
+    else if(str.equals("uar"))ll{
 //      stepper.moveTo(0);
 //      stepper.runToPosition();
       save_stepper1_pos(0);
       go_to_home1();
       Serial.println("uar");  
     }
+
+//==============================================
+//    change for lamp stepper motor position
+//    setting to tung position
+//==============================================
     else if(str.equals("tung")){
-      stepper1.moveTo(19000);
+      stepper1.moveTo(19000);      // update with tested position
       stepper1.runToPosition();
       save_stepper1_pos(19000);
       Serial.println("tung");
     }
+//==============================================
+
+
+//==============================================
+//    change for lamp stepper motor position
+//    setting to fabry position
+//==============================================
     else if(str.equals("fabry")){
-      stepper1.moveTo(38000);
+      stepper1.moveTo(38000);      // update with tested position
       stepper1.runToPosition();
       save_stepper1_pos(38000);
       Serial.println("fabry");
     }
+//==============================================
 
     else if(str.equals("is2")){
       Serial.print("sensor2 val: ");
@@ -228,15 +250,22 @@ void loop() {
 //      stepper.moveTo(0);
 //      stepper.runToPosition();
       save_stepper2_pos(0);
-      go_to_home1();
+      go_to_home2();
       Serial.println("nonspec");  
     }
+
+    
+//==============================================
+//    change for speckle stepper motor position
+//    setting to speckle position
+//==============================================
     else if(str.equals("spec")){
-      stepper2.moveTo(19000);
+      stepper2.moveTo(-110500);   // update with tested position
       stepper2.runToPosition();
-      save_stepper2_pos(19000);
+      save_stepper2_pos(-110500);
       Serial.println("spec");
     }
+//==============================================
 
 //    else if (str.startsWith("mr")){
 //      stepper.setSpeed(2000);
@@ -258,10 +287,12 @@ void loop() {
     else if(str.equals("sol1")){
       digitalWrite(sol1, !digitalRead(sol1));
       Serial.println(digitalRead(sol1));
+   
     }
     else if(str.equals("sol2")){
       digitalWrite(sol2, !digitalRead(sol2));
       Serial.println(digitalRead(sol2));
+
     }
       else if(str.equals("sol3")){
       digitalWrite(sol3, !digitalRead(sol3));
@@ -276,49 +307,53 @@ void loop() {
       digitalWrite(uar, !digitalRead(uar));
       Serial.println(digitalRead(uar));
     }
-    
+    else if(str.equals("speckle_relay")){
+      digitalWrite(speckle_cvr, !digitalRead(speckle_cvr));
+      Serial.println(digitalRead(speckle_cvr));
+    }
     else if(str.equals("status")){
 
-      // returns 0 0 0 0 0 0 
-      //         |-----| | |
-      //         relays  | lamp_position
-      //                 |
-      //              nd_filter
+      // returns 0 0 0 0 0 0 0 
+      //         |---------| | 
+      //         relays      |
+      //                     |
+      //                  nd_filter
 
       //  relays status
       Serial.print(digitalRead(uar));
       Serial.print(digitalRead(tung));
       Serial.print(digitalRead(sol1));
       Serial.print(digitalRead(sol2));
-       Serial.print(digitalRead(sol3));
+      Serial.print(digitalRead(sol3));
+      Serial.print(digitalRead(speckle_cvr));
 
       // nd filter status
       if ( servo.read() == 0){        
-        Serial.print(0);
+        Serial.println(0);
       }
       else{
-        Serial.print(1);
-      }
-      
-      // lamp position status
-      if(stepper1_pos == 0){
         Serial.println(1);
       }
-      else if(stepper1_pos == 19000){
-        Serial.println(2);
-      }
-      else{
-        Serial.println(3);
-      }
-
-      // speckle Imaging postion
-
-           if(stepper2_pos == 0){
-        Serial.println(4);
-      }
-      else{
-        Serial.println(5);
-      }
+      
+//      // lamp position status
+//      if(stepper1_pos == 0){
+//        Serial.println(1);
+//      }
+//      else if(stepper1_pos == 19000){
+//        Serial.println(2);
+//      }
+//      else{
+//        Serial.println(3);
+//      }
+//
+//      // speckle Imaging postion
+//
+//           if(stepper2_pos == 0){
+//        Serial.println(4);
+//      }
+//      else{
+//        Serial.println(5);
+//      }
     }
     
     else if(str.equals("allrelayon")){
@@ -326,7 +361,7 @@ void loop() {
       digitalWrite(tung, LOW); delay(100);
       digitalWrite(sol1, LOW); delay(100);
       digitalWrite(sol2, LOW); delay(100);
-      digitalWrite(sol3, LOW);
+      digitalWrite(sol3, LOW); delay(100);
       Serial.println("done");
     }
     else if(str.equals("allrelayoff")){
